@@ -1,25 +1,5 @@
-import { env } from "@/utils/env.mjs";
-import { z } from "zod";
-
-const eventSchema = z.object({
-  key: z.string().uuid(),
-  name: z.string(),
-  description: z.string(),
-  dateCreated: z.string().datetime(),
-  contactFullName: z.string(),
-  contactNumber: z.string(),
-});
-
-const getEventDetails = async (id: string) => {
-  try {
-    const result = await fetch(`${env.API_URL}/events/${id}`);
-    const json = await result.json();
-    return eventSchema.parse(json);
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
-};
+import { getEventDetails } from "@/services/eventsService";
+import { AddInviteForm } from "./invite/invite-form";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const eventDetails = await getEventDetails(params.id);
