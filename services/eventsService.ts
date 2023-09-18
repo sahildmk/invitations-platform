@@ -1,6 +1,14 @@
 import { env } from "@/utils/env.mjs";
 import { number, string, z } from "zod";
 
+export const inviteSchema = z.object({
+  key: z.string().uuid(),
+  maxAttendees: z.number(),
+  ownerFullname: z.string(),
+  confirmedAttendees: z.number().nullable(),
+  isConfirmed: z.boolean(),
+})
+
 export const eventSchema = z.object({
   key: z.string().uuid(),
   name: z.string(),
@@ -9,6 +17,14 @@ export const eventSchema = z.object({
   contactFullName: z.string(),
   contactNumber: z.string(),
 });
+
+export const eventSchemaWithInvites = eventSchema.extend({
+  invites: z.array(inviteSchema).nullable()
+})
+
+export const inviteSchemaWithEvent = inviteSchema.extend({
+  event: eventSchema.nullable(),
+})
 
 const createInviteSchema = z.object({
   eventKey: string().uuid(),
@@ -22,7 +38,18 @@ export const getEventDetails = async (id: string) => {
   try {
     const result = await fetch(`${env.API_URL}/events/${id}`);
     const json = await result.json();
-    return eventSchema.parse(json);
+    return eventSchemaWithInvites.parse(json);
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+};
+
+export const getInviteDetails = async (id: string) => {
+  try {
+    const result = await fetch(`${env.API_URL}/invites/${id}`);
+    const json = await result.json();
+    return inviteSchemaWithEvent.parse(json);
   } catch (error) {
     console.log(error);
     return undefined;
@@ -42,7 +69,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
       body: JSON.stringify(body),
     });
     const json = await result.json();
-    console.log(json);
+    return json;
   } catch (error) {
     console.log(error);
     return undefined;

@@ -54,3 +54,7 @@ export const inviteRelations = relations(invite, ({ one }) => ({
     references: [event.id],
   }),
 }));
+
+export const eventRelations = relations(event, ({many}) => ({
+  invites: many(invite)
+}))

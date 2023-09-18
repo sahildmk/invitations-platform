@@ -16,14 +16,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { addInviteToEvent } from "@/services/eventsService";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
     message: "Full name must not be empty",
   }),
-  maxAttendees: z.number().min(1, {
-    message: "Must have at least one attendee",
-  }),
+  maxAttendees: z
+    .number()
+    .min(1, {
+      message: "Must have at least one attendee",
+    })
+    .max(10, {
+      message: "Cannot have more than 10 attendees",
+    }),
 });
 
 export function AddInviteForm(props: { eventKey: string }) {
@@ -34,14 +40,19 @@ export function AddInviteForm(props: { eventKey: string }) {
     },
   });
 
-  // 2. Define a submit handler.
+  const { toast } = useToast();
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     addInviteToEvent({
       eventKey: props.eventKey,
       ownerFullName: values.fullName,
       maxAttendees: values.maxAttendees,
+    }).then((res) => {
+      toast({
+        description: `Invite added for ${values.fullName}`,
+      });
+      form.reset();
+      form.resetField("maxAttendees");
     });
   }
 

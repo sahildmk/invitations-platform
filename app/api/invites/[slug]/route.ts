@@ -7,12 +7,12 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   const result = await ProcessRequestAsync(async () => {
-    return await db.query.event.findFirst({
-      with: {
-        invites: true
-      },
-      where: (events, { eq }) => eq(events.key, params.slug),
-    });
+    return await db.query.invite.findFirst({
+        with: {
+            event: true
+        },
+        where: (invites, {eq}) => eq(invites.key, params.slug)
+    })
   });
   
   if (!result.ok) {
