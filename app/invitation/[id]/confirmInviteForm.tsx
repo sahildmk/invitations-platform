@@ -45,6 +45,9 @@ export function ConfirmInviteForm(props: { invite: Invite }) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      attendees: invite.confirmedAttendees ?? 0,
+    },
   });
 
   const { toast } = useToast();

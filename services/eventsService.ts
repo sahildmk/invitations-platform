@@ -84,7 +84,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
 export const updateInvite = async (input: UpdateInvite) => {
   try {
     const result = await fetch(
-      `${env.NEXT_PUBLIC_API_URL}/invite/${input.key}`,
+      `${env.NEXT_PUBLIC_API_URL}/invites/${input.key}`,
       {
         method: "put",
         body: JSON.stringify(input),
