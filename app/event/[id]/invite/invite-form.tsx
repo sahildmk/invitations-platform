@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { addInviteToEvent } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
+import { BaseSyntheticEvent } from "react";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -32,7 +33,13 @@ const formSchema = z.object({
     }),
 });
 
-export function AddInviteForm(props: { eventKey: string }) {
+type Props = {
+  eventKey: string;
+  refetch: () => void;
+};
+
+export function AddInviteForm(props: Props) {
+  const { eventKey, refetch } = props;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,9 +49,13 @@ export function AddInviteForm(props: { eventKey: string }) {
 
   const { toast } = useToast();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(
+    values: z.infer<typeof formSchema>,
+    e: BaseSyntheticEvent<object, any, any> | undefined
+  ) {
+    e?.preventDefault();
     addInviteToEvent({
-      eventKey: props.eventKey,
+      eventKey: eventKey,
       ownerFullName: values.fullName,
       maxAttendees: values.maxAttendees,
     }).then((res) => {
@@ -53,6 +64,7 @@ export function AddInviteForm(props: { eventKey: string }) {
       });
       form.reset();
       form.resetField("maxAttendees");
+      refetch();
     });
   }
 

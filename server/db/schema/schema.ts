@@ -39,7 +39,7 @@ export const invite = pgTable(
     ownerFullname: text("owner_fullname").notNull(),
     maxAttendees: integer("max_attendees").notNull(),
     confirmedAttendees: integer("confirmed_attendees"),
-    isConfirmed: boolean("is_confirmed").notNull().default(false),
+    isConfirmed: boolean("is_confirmed"),
   },
   (table) => {
     return {

@@ -39,7 +39,7 @@ export type Invite = z.infer<typeof inviteSchemaWithEvent>;
 
 export const getEventDetails = async (id: string) => {
   try {
-    const result = await fetch(`${env.API_URL}/events/${id}`);
+    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
     const json = await result.json();
     return eventSchemaWithInvites.parse(json);
   } catch (error) {
@@ -50,7 +50,7 @@ export const getEventDetails = async (id: string) => {
 
 export const getInviteDetails = async (id: string) => {
   try {
-    const result = await fetch(`${env.API_URL}/invites/${id}`, {
+    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/invites/${id}`, {
       cache: "no-store",
     });
     const json = await result.json();

@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import {
   Invite,
   addInviteToEvent,
@@ -22,7 +22,8 @@ import {
 } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { useRef } from "react";
+import { BaseSyntheticEvent, useRef } from "react";
+import { useRouter } from "next/router";
 
 const createFormSchema = (maxAttendees: number) => {
   return z.object({
@@ -38,42 +39,84 @@ const createFormSchema = (maxAttendees: number) => {
   });
 };
 
-export function ConfirmInviteForm(props: { invite: Invite }) {
-  const { invite } = props;
+type Props = {
+  invite: Invite;
+  refetch: () => void;
+};
+
+const GetToastDescription = (isConfirmed: boolean, attendees: number) => {
+  return isConfirmed
+    ? `Invite confirmed for ${attendees} attendees.`
+    : "Invite declined.";
+};
+
+export function ConfirmInviteForm(props: Props) {
+  const { invite, refetch } = props;
+
   const isConfirmed = useRef(false);
   const formSchema = createFormSchema(invite.maxAttendees);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      attendees: invite.confirmedAttendees ?? 0,
-    },
+    ...(invite.confirmedAttendees && {
+      defaultValues: {
+        attendees: invite.confirmedAttendees,
+      },
+    }),
   });
 
   const { toast } = useToast();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onValidSubmit(
+    values: z.infer<typeof formSchema>,
+    e: BaseSyntheticEvent<object, any, any> | undefined
+  ) {
+    e?.preventDefault();
     updateInvite({
       key: invite.key,
-      confirmedAttendees: values.attendees,
+      confirmedAttendees: isConfirmed.current ? values.attendees : null,
       message: values.message,
       isConfirmed: isConfirmed.current,
     }).then((res) => {
       toast({
-        description: `Invite confirmed for ${values.attendees} attendees`,
+        description: GetToastDescription(isConfirmed.current, values.attendees),
+      });
+      refetch();
+    });
+  }
+
+  function onInvalidSubmit(
+    errors: FieldErrors<{
+      attendees: number;
+      message?: string | undefined;
+    }>,
+    e: BaseSyntheticEvent<object, any, any> | undefined
+  ) {
+    e?.preventDefault();
+
+    if (isConfirmed.current) return;
+
+    updateInvite({
+      key: invite.key,
+      confirmedAttendees: null,
+      message: undefined,
+      isConfirmed: isConfirmed.current,
+    }).then((res) => {
+      toast({
+        description: GetToastDescription(isConfirmed.current, 0),
       });
       form.reset();
+
+      refetch();
     });
-    // addInviteToEvent({
-    //   eventKey: props.eventKey,
-    //   ownerFullName: values.fullName,
-    //   maxAttendees: values.maxAttendees,
-    // })
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+      <form
+        onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)}
+        className="w-full"
+      >
         <div className="flex flex-col space-y-2 mb-4">
           <FormField
             control={form.control}
@@ -83,14 +126,19 @@ export function ConfirmInviteForm(props: { invite: Invite }) {
                 <FormLabel>Number of Attendees</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={`${invite.maxAttendees}`}
+                    placeholder={`${
+                      invite.confirmedAttendees ?? invite.maxAttendees
+                    }`}
                     {...field}
                     type="number"
                     onChange={(event) => field.onChange(+event.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
-                {/* <FormDescription>Invitation addressee</FormDescription> */}
+                <FormDescription>
+                  You can confirm attendence for a maximum of{" "}
+                  {invite.maxAttendees} people
+                </FormDescription>
               </FormItem>
             )}
           />

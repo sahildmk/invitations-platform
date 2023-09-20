@@ -1,28 +1,50 @@
+"use client";
 import { getEventDetails } from "@/services/eventsService";
 import { AddInviteForm } from "./invite-form";
 import Link from "next/link";
+import { useQuery } from "react-query";
+import { Loader2 } from "lucide-react";
+import { notFound } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader } from "@/components/ui/loader";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const eventDetails = await getEventDetails(params.id);
+export default function Page({ params }: { params: { id: string } }) {
+  const { isLoading, data, refetch } = useQuery(
+    "invite",
+    () => getEventDetails(params.id),
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  if (!eventDetails) return <>Event not found...</>;
+  if (isLoading)
+    return (
+      <main className="grid place-items-center min-h-screen">
+        <Loader />
+      </main>
+    );
+
+  if (!data) {
+    notFound();
+  }
 
   return (
     <main className="flex justify-center min-h-screen p-10 md:p-24 space-y-4">
       <section className="max-w-[800px]">
         <h1 className="text-3xl font-bold text-center pb-5">
-          Invitations for {eventDetails?.name}
+          Invitations for {data.name}
         </h1>
         <section className="w-full space-y-4">
-          <h2 className="text-xl font-semibold">Current Invitaitons</h2>
-          <section className="flex flex-col gap-2">
-            {eventDetails.invites?.map((invite) => (
-              <Link key={invite.key} href={`/invitation/${invite.key}`}>
-                {invite.ownerFullname} ({invite.maxAttendees})
-              </Link>
+          <ScrollArea className="h-[400px] border rounded-md p-4">
+            {data.invites?.map((invite) => (
+              <div key={invite.key}>
+                <Link href={`/invitation/${invite.key}`}>
+                  {invite.ownerFullname} ({invite.maxAttendees})
+                </Link>
+              </div>
             ))}
-          </section>
-          <AddInviteForm eventKey={params.id} />
+          </ScrollArea>
+          <AddInviteForm eventKey={params.id} refetch={refetch} />
         </section>
       </section>
     </main>
