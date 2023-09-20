@@ -9,12 +9,12 @@ export async function GET(
   const result = await ProcessRequestAsync(async () => {
     return await db.query.event.findFirst({
       with: {
-        invites: true
+        invites: true,
       },
       where: (events, { eq }) => eq(events.key, params.slug),
     });
   });
-  
+
   if (!result.ok) {
     return NextResponse.json({}, { status: 404 });
   }

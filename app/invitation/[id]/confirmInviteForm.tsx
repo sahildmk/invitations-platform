@@ -22,8 +22,9 @@ import {
 } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { BaseSyntheticEvent, useRef } from "react";
+import { BaseSyntheticEvent, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { InviteStatus } from "@/shared/invite";
 
 const createFormSchema = (maxAttendees: number) => {
   return z.object({
@@ -36,6 +37,7 @@ const createFormSchema = (maxAttendees: number) => {
         message: `Your maximum number of attendees is: ${maxAttendees}`,
       }),
     message: z.string().optional(),
+    contactNumber: z.string().optional(),
   });
 };
 
@@ -44,16 +46,21 @@ type Props = {
   refetch: () => void;
 };
 
-const GetToastDescription = (isConfirmed: boolean, attendees: number) => {
-  return isConfirmed
+const GetToastDescription = (inviteStatus: InviteStatus, attendees: number) => {
+  return inviteStatus === "confirmed"
     ? `Invite confirmed for ${attendees} attendees.`
     : "Invite declined.";
 };
 
+const messagePlaceholder =
+  "Write us a message about any considerations you may have such as your dietary requirements.";
+
 export function ConfirmInviteForm(props: Props) {
   const { invite, refetch } = props;
-
-  const isConfirmed = useRef(false);
+  const [confirmed, setConfirmed] = useState(
+    invite.inviteStatus === "confirmed"
+  );
+  const inviteStatus = useRef<InviteStatus>("none");
   const formSchema = createFormSchema(invite.maxAttendees);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,6 +68,16 @@ export function ConfirmInviteForm(props: Props) {
     ...(invite.confirmedAttendees && {
       defaultValues: {
         attendees: invite.confirmedAttendees,
+      },
+    }),
+    ...(invite.message && {
+      defaultValues: {
+        message: invite.message,
+      },
+    }),
+    ...(invite.contactNumber && {
+      defaultValues: {
+        contactNumber: invite.contactNumber,
       },
     }),
   });
@@ -74,13 +91,19 @@ export function ConfirmInviteForm(props: Props) {
     e?.preventDefault();
     updateInvite({
       key: invite.key,
-      confirmedAttendees: isConfirmed.current ? values.attendees : null,
+      confirmedAttendees: inviteStatus.current ? values.attendees : null,
       message: values.message,
-      isConfirmed: isConfirmed.current,
+      isConfirmed: false,
+      inviteStatus: inviteStatus.current,
+      contactNumber: values.contactNumber,
     }).then((res) => {
       toast({
-        description: GetToastDescription(isConfirmed.current, values.attendees),
+        description: GetToastDescription(
+          inviteStatus.current,
+          values.attendees
+        ),
       });
+      setConfirmed(true);
       refetch();
     });
   }
@@ -94,19 +117,19 @@ export function ConfirmInviteForm(props: Props) {
   ) {
     e?.preventDefault();
 
-    if (isConfirmed.current) return;
+    if (inviteStatus.current !== "declined") return;
 
     updateInvite({
       key: invite.key,
       confirmedAttendees: null,
-      message: undefined,
-      isConfirmed: isConfirmed.current,
+      isConfirmed: false,
+      inviteStatus: inviteStatus.current,
     }).then((res) => {
       toast({
-        description: GetToastDescription(isConfirmed.current, 0),
+        description: GetToastDescription(inviteStatus.current, 0),
       });
       form.reset();
-
+      setConfirmed(false);
       refetch();
     });
   }
@@ -141,6 +164,21 @@ export function ConfirmInviteForm(props: Props) {
                 </FormDescription>
               </FormItem>
             )}
+            disabled={confirmed}
+          />
+          <FormField
+            control={form.control}
+            name="contactNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact Number</FormLabel>
+                <FormControl>
+                  <Input placeholder={"0400000000"} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            disabled={confirmed}
           />
           <FormField
             control={form.control}
@@ -152,31 +190,44 @@ export function ConfirmInviteForm(props: Props) {
                   <Textarea
                     {...field}
                     rows={4}
-                    placeholder="Write us a message about any considerations. Write down any dietary requirements you may have."
+                    placeholder={messagePlaceholder}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
+            disabled={confirmed}
           />
         </div>
         <section className="flex gap-2">
           <Button
             type="submit"
             className="bg-green-600 hover:bg-green-700 flex-1"
-            disabled={invite.isConfirmed}
+            disabled={confirmed}
             onClick={() => {
-              isConfirmed.current = true;
+              inviteStatus.current = "confirmed";
             }}
           >
             Confirm
           </Button>
+          {confirmed && (
+            <Button
+              type="button"
+              variant={"outline"}
+              className="flex-1"
+              onClick={() => {
+                setConfirmed(false);
+              }}
+            >
+              Edit
+            </Button>
+          )}
           <Button
             type="submit"
             variant={"outline"}
             className="flex-1"
             onClick={() => {
-              isConfirmed.current = false;
+              inviteStatus.current = "declined";
             }}
           >
             Decline

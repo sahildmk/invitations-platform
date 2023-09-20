@@ -1,4 +1,4 @@
-import { UpdateInvite } from "@/shared/invite";
+import { UpdateInvite, inviteStatusEnum } from "@/shared/invite";
 import { env } from "@/utils/env.mjs";
 import { number, string, z } from "zod";
 
@@ -8,6 +8,9 @@ export const inviteSchema = z.object({
   ownerFullname: z.string(),
   confirmedAttendees: z.number().nullable(),
   isConfirmed: z.boolean(),
+  inviteStatus: inviteStatusEnum,
+  message: z.string().nullable(),
+  contactNumber: z.string().nullable(),
 });
 
 export const eventSchema = z.object({
@@ -41,6 +44,8 @@ export const getEventDetails = async (id: string) => {
   try {
     const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
     const json = await result.json();
+    console.log(json);
+
     return eventSchemaWithInvites.parse(json);
   } catch (error) {
     console.log(error);

@@ -5,7 +5,9 @@ import { number, string, z } from "zod";
 
 const createInviteSchema = z.object({
   eventKey: string().uuid(),
-  ownerFullName: string(),
+  ownerFullName: string().transform((val) => {
+    return val.trim().toLowerCase();
+  }),
   maxAttendees: number().min(1),
 });
 
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
   });
 
   if (!event)
-    return NextResponse.json({ message: "event not found" }, { status: 422 });
+    return NextResponse.json({ message: "event not found" }, { status: 404 });
 
   const inviteResult = await db
     .insert(invite)

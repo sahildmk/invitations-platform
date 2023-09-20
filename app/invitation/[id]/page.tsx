@@ -4,27 +4,46 @@ import Link from "next/link";
 import { ConfirmInviteForm } from "./confirmInviteForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useQuery } from "react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Variable } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
+import { InviteStatus, inviteStatusEnum } from "@/shared/invite";
+import { toTitleCase } from "@/lib/utils";
+
+const variant: {
+  [key in InviteStatus]: "success" | "destructive" | "default";
+} = {
+  [inviteStatusEnum.Values.confirmed]: "success",
+  [inviteStatusEnum.Values.declined]: "destructive",
+  [inviteStatusEnum.Values.none]: "default",
+};
 
 function AttendenceBanner(props: { invite: Invite }) {
   const { invite } = props;
 
-  let title = "Confirm Attendence";
-  let description = "Let us know whether you are able to attend!";
-
-  if (invite.isConfirmed) {
-    title = "Thank you for confirming!";
-    description = `We are excited to celebrate ${
-      invite.event?.name ?? "this event"
-    } with you.`;
-  }
+  const bannerData = {
+    [inviteStatusEnum.Values.none]: {
+      title: "Confirm Attendence",
+      description: "Let us know whether you are able to attend!",
+    },
+    [inviteStatusEnum.Values.confirmed]: {
+      title: "Thank you for confirming!",
+      description: `We are excited to celebrate ${
+        invite.event?.name ?? "this event"
+      } with you.`,
+    },
+    [inviteStatusEnum.Values.declined]: {
+      title: "Invite Declined",
+      description: "Thank you for letting us know!",
+    },
+  };
 
   return (
-    <Alert variant={invite.isConfirmed ? "success" : "default"}>
-      <AlertTitle>{title}</AlertTitle>
-      <AlertDescription>{description}</AlertDescription>
+    <Alert variant={variant[invite.inviteStatus]}>
+      <AlertTitle>{bannerData[invite.inviteStatus].title}</AlertTitle>
+      <AlertDescription>
+        {bannerData[invite.inviteStatus].description}
+      </AlertDescription>
     </Alert>
   );
 }
@@ -35,6 +54,7 @@ export default function Page({ params }: { params: { id: string } }) {
     () => getInviteDetails(params.id),
     {
       refetchOnWindowFocus: false,
+      cacheTime: 1,
     }
   );
 
@@ -57,8 +77,10 @@ export default function Page({ params }: { params: { id: string } }) {
           <Link href={`/event/${data.event?.key}`}>{data.event?.name}</Link>
         </h1>
         <h2 className="text-xl sm:text-2xl font-medium">
-          <span className="font-semibold">{data.ownerFullname}</span>,
-          you&apos;re invited!
+          <span className="font-semibold">
+            {toTitleCase(data.ownerFullname)}
+          </span>
+          , you&apos;re invited!
         </h2>
         {/* <p>
           You have {invite.maxAttendees} allocated to you. How many will be

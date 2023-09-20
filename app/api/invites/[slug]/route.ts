@@ -31,8 +31,6 @@ export async function PUT(
 ) {
   const json = await request.json();
 
-  console.log(json);
-
   const inputResult = updateInviteSchema.safeParse(json);
 
   if (!inputResult.success) {
@@ -49,7 +47,9 @@ export async function PUT(
       .update(invite)
       .set({
         confirmedAttendees: data.confirmedAttendees,
-        isConfirmed: data.isConfirmed,
+        inviteStatus: data.inviteStatus,
+        message: data.message,
+        contactNumber: data.contactNumber,
       })
       .where(eq(invite.key, params.slug))
       .returning();

@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   serial,
   text,
@@ -28,6 +29,12 @@ export const event = pgTable(
   }
 );
 
+export const inviteStatusEnum = pgEnum("invite_status_enum", [
+  "confirmed",
+  "declined",
+  "none",
+]);
+
 export const invite = pgTable(
   "invite",
   {
@@ -39,7 +46,11 @@ export const invite = pgTable(
     ownerFullname: text("owner_fullname").notNull(),
     maxAttendees: integer("max_attendees").notNull(),
     confirmedAttendees: integer("confirmed_attendees"),
-    isConfirmed: boolean("is_confirmed"),
+    isConfirmed: boolean("is_confirmed").default(false),
+    isDeclined: boolean("is_declined").default(false),
+    inviteStatus: inviteStatusEnum("invite_status").default("none"),
+    message: text("message"),
+    contactNumber: text("contact_number"),
   },
   (table) => {
     return {
@@ -55,6 +66,6 @@ export const inviteRelations = relations(invite, ({ one }) => ({
   }),
 }));
 
-export const eventRelations = relations(event, ({many}) => ({
-  invites: many(invite)
-}))
+export const eventRelations = relations(event, ({ many }) => ({
+  invites: many(invite),
+}));
