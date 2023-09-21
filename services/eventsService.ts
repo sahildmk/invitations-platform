@@ -44,8 +44,6 @@ export const getEventDetails = async (id: string) => {
   try {
     const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
     const json = await result.json();
-    console.log(json);
-
     return eventSchemaWithInvites.parse(json);
   } catch (error) {
     console.log(error);

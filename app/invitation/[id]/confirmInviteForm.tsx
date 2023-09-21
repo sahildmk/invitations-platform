@@ -70,11 +70,6 @@ export function ConfirmInviteForm(props: Props) {
         attendees: invite.confirmedAttendees,
       },
     }),
-    ...(invite.message && {
-      defaultValues: {
-        message: invite.message,
-      },
-    }),
     ...(invite.contactNumber && {
       defaultValues: {
         contactNumber: invite.contactNumber,
@@ -84,7 +79,7 @@ export function ConfirmInviteForm(props: Props) {
 
   const { toast } = useToast();
 
-  function onValidSubmit(
+  function onSubmit(
     values: z.infer<typeof formSchema>,
     e: BaseSyntheticEvent<object, any, any> | undefined
   ) {
@@ -108,25 +103,15 @@ export function ConfirmInviteForm(props: Props) {
     });
   }
 
-  function onInvalidSubmit(
-    errors: FieldErrors<{
-      attendees: number;
-      message?: string | undefined;
-    }>,
-    e: BaseSyntheticEvent<object, any, any> | undefined
-  ) {
-    e?.preventDefault();
-
-    if (inviteStatus.current !== "declined") return;
-
+  function declineInvite() {
     updateInvite({
       key: invite.key,
       confirmedAttendees: null,
       isConfirmed: false,
-      inviteStatus: inviteStatus.current,
-    }).then((res) => {
+      inviteStatus: "declined",
+    }).then(() => {
       toast({
-        description: GetToastDescription(inviteStatus.current, 0),
+        description: GetToastDescription("declined", 0),
       });
       form.reset();
       setConfirmed(false);
@@ -136,10 +121,7 @@ export function ConfirmInviteForm(props: Props) {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)}
-        className="w-full"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <div className="flex flex-col space-y-2 mb-4">
           <FormField
             control={form.control}
@@ -190,7 +172,7 @@ export function ConfirmInviteForm(props: Props) {
                   <Textarea
                     {...field}
                     rows={4}
-                    placeholder={messagePlaceholder}
+                    placeholder={invite.message ?? messagePlaceholder}
                   />
                 </FormControl>
                 <FormMessage />
@@ -223,12 +205,10 @@ export function ConfirmInviteForm(props: Props) {
             </Button>
           )}
           <Button
-            type="submit"
+            type="button"
             variant={"outline"}
             className="flex-1"
-            onClick={() => {
-              inviteStatus.current = "declined";
-            }}
+            onClick={declineInvite}
           >
             Decline
           </Button>

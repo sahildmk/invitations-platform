@@ -17,7 +17,6 @@ type CreateInviteResponse = {
   ownerFullName: string;
   maxAttendees: number;
   confirmedAttendees: number | null;
-  isConfirmed: boolean;
 };
 
 export async function POST(request: Request) {
@@ -55,7 +54,6 @@ export async function POST(request: Request) {
       inviteKey: invite.key,
       eventKey: event.key,
       ownerFullName: invite.ownerFullname,
-      isConfirmed: invite.isConfirmed,
       maxAttendees: invite.maxAttendees,
       confirmedAttendees: invite.confirmedAttendees,
     };

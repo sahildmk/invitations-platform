@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "@/components/ui/loader";
+import { toTitleCase } from "@/lib/utils";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { isLoading, data, refetch } = useQuery(
@@ -40,7 +41,8 @@ export default function Page({ params }: { params: { id: string } }) {
             {data.invites?.map((invite) => (
               <div key={invite.key}>
                 <Link href={`/invitation/${invite.key}`}>
-                  {invite.ownerFullname} ({invite.maxAttendees})
+                  {toTitleCase(invite.ownerFullname)} ({invite.maxAttendees}{" "}
+                  attendees)
                 </Link>
               </div>
             ))}

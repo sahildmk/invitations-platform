@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { addInviteToEvent } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
-import { BaseSyntheticEvent } from "react";
+import { BaseSyntheticEvent, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -40,6 +41,7 @@ type Props = {
 
 export function AddInviteForm(props: Props) {
   const { eventKey, refetch } = props;
+  const [buttonLoading, setButtonLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,6 +56,7 @@ export function AddInviteForm(props: Props) {
     e: BaseSyntheticEvent<object, any, any> | undefined
   ) {
     e?.preventDefault();
+    setButtonLoading(true);
     addInviteToEvent({
       eventKey: eventKey,
       ownerFullName: values.fullName,
@@ -65,6 +68,7 @@ export function AddInviteForm(props: Props) {
       form.reset();
       form.resetField("maxAttendees");
       refetch();
+      setButtonLoading(false);
     });
   }
 
@@ -105,7 +109,13 @@ export function AddInviteForm(props: Props) {
             )}
           />
         </div>
-        <Button type="submit">Add Invitation</Button>
+        <Button type="submit">
+          {buttonLoading ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            "Add Invitation"
+          )}
+        </Button>
       </form>
     </Form>
   );
