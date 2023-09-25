@@ -14,3 +14,13 @@ export const updateInviteSchema = z.object({
 });
 
 export type UpdateInvite = z.infer<typeof updateInviteSchema>;
+
+export const InviteResponseSchema = z.object({
+  inviteKey: z.string(),
+  eventKey: z.string(),
+  ownerFullName: z.string(),
+  maxAttendees: z.number(),
+  confirmedAttendees: z.number().nullable(),
+});
+
+export type InviteResponse = z.infer<typeof InviteResponseSchema>;

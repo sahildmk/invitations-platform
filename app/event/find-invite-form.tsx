@@ -14,32 +14,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { addInviteToEvent } from "@/services/eventsService";
+import { findInviteByFullName } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
 import { BaseSyntheticEvent, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
     message: "Full name must not be empty",
   }),
-  maxAttendees: z
-    .number()
-    .min(1, {
-      message: "Must have at least one attendee",
-    })
-    .max(10, {
-      message: "Cannot have more than 10 attendees",
-    }),
 });
 
 type Props = {
   eventKey: string;
-  refetch: () => void;
 };
 
-export function AddInviteForm(props: Props) {
-  const { eventKey, refetch } = props;
+export function FindInviteForm(props: Props) {
+  const { eventKey } = props;
+  const router = useRouter();
   const [buttonLoading, setButtonLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,18 +50,16 @@ export function AddInviteForm(props: Props) {
   ) {
     e?.preventDefault();
     setButtonLoading(true);
-    addInviteToEvent({
-      eventKey: eventKey,
-      ownerFullName: values.fullName,
-      maxAttendees: values.maxAttendees,
-    }).then((res) => {
-      toast({
-        description: `Invite added for ${values.fullName}`,
-      });
-      form.reset();
-      form.resetField("maxAttendees");
-      refetch();
-      setButtonLoading(false);
+    findInviteByFullName(eventKey, values.fullName).then((res) => {
+      if (!res) {
+        toast({
+          description: "Invite not found",
+          variant: "destructive",
+        });
+        setButtonLoading(false);
+      } else {
+        router.push(`/invitation/${res.inviteKey}`);
+      }
     });
   }
 
@@ -82,26 +74,7 @@ export function AddInviteForm(props: Props) {
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Full name" {...field} />
-                </FormControl>
-                <FormMessage />
-                {/* <FormDescription>Invitation addressee</FormDescription> */}
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="maxAttendees"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Maximum Attendees</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Maximum attendees"
-                    {...field}
-                    type="number"
-                    onChange={(event) => field.onChange(+event.target.value)}
-                  />
+                  <Input placeholder="Enter your full name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +85,7 @@ export function AddInviteForm(props: Props) {
           {buttonLoading ? (
             <Loader2 className="animate-spin" />
           ) : (
-            "Add Invitation"
+            "Find Invitation"
           )}
         </Button>
       </form>

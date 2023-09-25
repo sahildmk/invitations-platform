@@ -1,4 +1,8 @@
-import { UpdateInvite, inviteStatusEnum } from "@/shared/invite";
+import {
+  UpdateInvite,
+  InviteResponseSchema as inviteResponseSchema,
+  inviteStatusEnum,
+} from "@/shared/invite";
 import { env } from "@/utils/env.mjs";
 import { number, string, z } from "zod";
 
@@ -95,6 +99,27 @@ export const updateInvite = async (input: UpdateInvite) => {
     );
     const json = await result.json();
     return json;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+};
+
+export const findInviteByFullName = async (
+  eventKey: string,
+  fullName: string
+) => {
+  try {
+    const result = await fetch(
+      `${
+        env.NEXT_PUBLIC_API_URL
+      }/invites?eventKey=${eventKey}&fullName=${encodeURI(fullName)}`,
+      {
+        cache: "no-store",
+      }
+    );
+    const json = await result.json();
+    return inviteResponseSchema.parse(json);
   } catch (error) {
     console.log(error);
     return undefined;

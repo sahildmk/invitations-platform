@@ -70,7 +70,7 @@ export default function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <main className="flex min-h-screen justify-center p-8 sm:p-24">
+    <main className="flex min-h-screen justify-center p-8 sm:p-20">
       <section className="flex flex-col items-center space-y-5 sm:w-[500px]">
         <AttendenceBanner invite={data} />
         <h1 className="text-3xl sm:text-4xl font-bold">{data.event?.name}</h1>
