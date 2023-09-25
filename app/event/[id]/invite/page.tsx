@@ -9,6 +9,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "@/components/ui/loader";
 import { toTitleCase } from "@/lib/utils";
 
+const tags = Array.from({ length: 50 }).map(
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+);
+
 export default function Page({ params }: { params: { id: string } }) {
   const { isLoading, data, refetch } = useQuery(
     "event",
@@ -37,15 +41,17 @@ export default function Page({ params }: { params: { id: string } }) {
           Invitations for {data.name}
         </h1>
         <section className="w-full space-y-4">
-          <ScrollArea className="max-h-[400px] border rounded-md p-4">
-            {data.invites?.map((invite) => (
-              <div key={invite.key}>
-                <Link href={`/invitation/${invite.key}`}>
-                  {toTitleCase(invite.ownerFullname)} ({invite.maxAttendees}{" "}
-                  attendees)
-                </Link>
-              </div>
-            ))}
+          <ScrollArea className="h-80 rounded-md border">
+            <div className="p-4">
+              {data.invites?.map((invite) => (
+                <div key={invite.key}>
+                  <Link href={`/invitation/${invite.key}`}>
+                    {toTitleCase(invite.ownerFullname)} ({invite.maxAttendees}{" "}
+                    attendees)
+                  </Link>
+                </div>
+              ))}
+            </div>
           </ScrollArea>
           <AddInviteForm eventKey={params.id} refetch={refetch} />
         </section>
