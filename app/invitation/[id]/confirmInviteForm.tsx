@@ -15,11 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FieldErrors, useForm } from "react-hook-form";
-import {
-  Invite,
-  addInviteToEvent,
-  updateInvite,
-} from "@/services/eventsService";
+import { Invite, updateInvite } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { BaseSyntheticEvent, useRef, useState } from "react";
