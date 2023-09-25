@@ -26,6 +26,9 @@ dependencies:
   '@t3-oss/env-nextjs':
     specifier: ^0.6.1
     version: 0.6.1(typescript@5.2.2)(zod@3.21.4)
+  '@tanstack/react-table':
+    specifier: ^8.10.1
+    version: 8.10.1(react-dom@18.2.0)(react@18.2.0)
   '@types/node':
     specifier: 20.6.2
     version: 20.6.2
@@ -916,6 +919,23 @@ packages:
       '@t3-oss/env-core': 0.6.1(typescript@5.2.2)(zod@3.21.4)
       typescript: 5.2.2
       zod: 3.21.4
+    dev: false
+
+  /@tanstack/react-table@8.10.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-pD58vH5ahZv1qzAK9Xl87A5dydBnKiDGdyEsd5VK2bG2wGRbfbpBfH915KdUv+8XqabDQgUo8nU8qHBEQv1qvg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      '@tanstack/table-core': 8.10.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@tanstack/table-core@8.10.1:
+    resolution: {integrity: sha512-dvO7wz+WjnT+7KI6ZZ+GAe9tljIFResDaV/TfOhfpeTB0ud9pILsavuM22HAXG2NsVaIG2Zax2OaVIsNt0z7Og==}
+    engines: {node: '>=12'}
     dev: false
 
   /@types/json5@0.0.29:
