@@ -1,13 +1,12 @@
 "use client";
 import { getEventDetails } from "@/services/eventsService";
 import { AddInviteForm } from "./invite-form";
-import Link from "next/link";
 import { useQuery } from "react-query";
-import { Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "@/components/ui/loader";
-import { toTitleCase } from "@/lib/utils";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`
@@ -30,7 +29,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </main>
     );
 
-  if (!data) {
+  if (!data || !data.invites) {
     notFound();
   }
 
@@ -41,17 +40,8 @@ export default function Page({ params }: { params: { id: string } }) {
           Invitations for {data.name}
         </h1>
         <section className="w-full space-y-4">
-          <ScrollArea className="h-80 rounded-md border">
-            <div className="p-4">
-              {data.invites?.map((invite) => (
-                <div key={invite.key}>
-                  <Link href={`/invitation/${invite.key}`}>
-                    {toTitleCase(invite.ownerFullname)} ({invite.maxAttendees}{" "}
-                    attendees)
-                  </Link>
-                </div>
-              ))}
-            </div>
+          <ScrollArea className="w-80 sm:w-full">
+            <DataTable columns={columns} data={data.invites} />
           </ScrollArea>
           <AddInviteForm eventKey={params.id} refetch={refetch} />
         </section>
