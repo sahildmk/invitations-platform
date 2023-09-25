@@ -73,9 +73,7 @@ export default function Page({ params }: { params: { id: string } }) {
     <main className="flex min-h-screen justify-center p-8 sm:p-24">
       <section className="flex flex-col items-center space-y-5 sm:w-[500px]">
         <AttendenceBanner invite={data} />
-        <h1 className="text-3xl sm:text-4xl font-bold">
-          <Link href={`/event/${data.event?.key}`}>{data.event?.name}</Link>
-        </h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">{data.event?.name}</h1>
         <h2 className="text-xl sm:text-2xl font-medium">
           <span className="font-semibold">
             {toTitleCase(data.ownerFullname)}
