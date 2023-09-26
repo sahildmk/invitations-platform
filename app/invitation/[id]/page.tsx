@@ -1,17 +1,15 @@
 "use client";
-import { Invite, getInviteDetails } from "@/services/eventsService";
-import Link from "next/link";
-import { ConfirmInviteForm } from "./confirmInviteForm";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { useQuery } from "react-query";
-import { Loader2, Variable } from "lucide-react";
-import { notFound } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
-import { InviteStatus, inviteStatusEnum } from "@/shared/invite";
 import { toTitleCase } from "@/lib/utils";
+import { Invite, getInviteDetails } from "@/services/eventsService";
+import { InviteStatus, inviteStatusEnum } from "@/shared/invite";
+import { notFound } from "next/navigation";
+import { useQuery } from "react-query";
+import { ConfirmInviteForm } from "./confirmInviteForm";
 
 const variant: {
-  [key in InviteStatus]: "success" | "destructive" | "default";
+  [_ in InviteStatus]: "success" | "destructive" | "default";
 } = {
   [inviteStatusEnum.Values.confirmed]: "success",
   [inviteStatusEnum.Values.declined]: "destructive",

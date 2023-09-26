@@ -1,16 +1,12 @@
 "use client";
-import { getEventDetails } from "@/services/eventsService";
-import { AddInviteForm } from "./invite-form";
-import { useQuery } from "react-query";
-import { notFound } from "next/navigation";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "@/components/ui/loader";
-import { DataTable } from "./data-table";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { getEventDetails } from "@/services/eventsService";
+import { notFound } from "next/navigation";
+import { useQuery } from "react-query";
 import { columns } from "./columns";
-
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
-);
+import { DataTable } from "./data-table";
+import { AddInviteForm } from "./invite-form";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { isLoading, data, refetch } = useQuery(

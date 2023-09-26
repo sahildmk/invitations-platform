@@ -1,20 +1,30 @@
 "use client";
-import { getEventDetails } from "@/services/eventsService";
-import { Loader } from "@/components/ui/loader";
-import { notFound } from "next/navigation";
-import { useQuery } from "react-query";
-import { ConfirmInviteForm } from "@/app/invitation/[id]/confirmInviteForm";
-import { FindInviteForm } from "../find-invite-form";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
 } from "@/components/ui/card";
+import { Loader } from "@/components/ui/loader";
+import { getEventDetails } from "@/services/eventsService";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { useQuery } from "react-query";
+import { FindInviteForm } from "../find-invite-form";
 
-export default function Page({ params }: { params: { id: string } }) {
+type props = { params: { id: string } };
+
+export async function generateMetadata({ params }: props): Promise<Metadata> {
+  const event = await getEventDetails(params.id);
+  console.log(event);
+  return {
+    title: event?.name ?? "Invitation Manager",
+    description: event?.description ?? "You're invited!",
+  };
+}
+
+export default function Page({ params }: props) {
   const { isLoading, data } = useQuery(
     "event",
     () => getEventDetails(params.id),
