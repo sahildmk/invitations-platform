@@ -15,6 +15,7 @@ import { FindInviteForm } from "../find-invite-form";
 
 type props = { params: { id: string } };
 
+// TODO: figure out metadata function
 export async function generateMetadata({ params }: props): Promise<Metadata> {
   const event = await getEventDetails(params.id);
   console.log(event);
