@@ -7,9 +7,7 @@ class Logger implements ILogger {
   }
 
   error(_error: unknown): void {
-    console.log(env.NEXT_PUBLIC_NODE_ENV);
-
-    console.error(_error);
+    if (env.NEXT_PUBLIC_NODE_ENV === "development") console.error(_error);
   }
 
   warn(message: string): void {

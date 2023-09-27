@@ -45,9 +45,6 @@ type CreateInviteInput = z.infer<typeof createInviteSchema>;
 
 export type Invite = z.infer<typeof inviteSchemaWithEvent>;
 
-const apiUrl = new URL(env.NEXT_PUBLIC_API_URL);
-console.log(apiUrl);
-
 export const getEventDetails = async (id: string) => {
   return ProcessRequestAsync(async () => {
     const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
