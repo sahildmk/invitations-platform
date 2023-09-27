@@ -47,7 +47,7 @@ export type Invite = z.infer<typeof inviteSchemaWithEvent>;
 
 export const getEventDetails = async (id: string) => {
   return ProcessRequestAsync(async () => {
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
+    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/events/${id}`);
     const json = await result.json();
     return eventSchemaWithInvites.parse(json);
   });
@@ -55,9 +55,12 @@ export const getEventDetails = async (id: string) => {
 
 export const getInviteDetails = async (id: string) => {
   return ProcessRequestAsync(async () => {
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/invites/${id}`, {
-      cache: "no-store",
-    });
+    const result = await fetch(
+      `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
     const json = await result.json();
     return inviteSchemaWithEvent.parse(json);
   });
@@ -71,7 +74,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
       ownerFullName: input.ownerFullName,
     };
 
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/invites`, {
+    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`, {
       method: "post",
       body: JSON.stringify(body),
     });
@@ -83,7 +86,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
 export const updateInvite = async (input: UpdateInvite) => {
   return ProcessRequestAsync(async () => {
     const result = await fetch(
-      `${env.NEXT_PUBLIC_API_URL}/invites/${input.key}`,
+      `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${input.key}`,
       {
         method: "put",
         body: JSON.stringify(input),
@@ -98,7 +101,7 @@ export const findInviteByFullName = async (
   fullName: string
 ) => {
   return ProcessRequestAsync(async () => {
-    const url = new URL(`${env.NEXT_PUBLIC_API_URL}/invites`);
+    const url = new URL(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`);
     url.searchParams.set("eventKey", eventKey);
     url.searchParams.set("fullName", fullName);
     const result = await fetch(url.toString(), {
