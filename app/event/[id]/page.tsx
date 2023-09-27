@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Loader } from "@/components/ui/loader";
 import { getEventDetails } from "@/services/eventsService";
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { useQuery } from "react-query";
 import { FindInviteForm } from "../find-invite-form";
@@ -16,14 +15,14 @@ import { FindInviteForm } from "../find-invite-form";
 type props = { params: { id: string } };
 
 // TODO: figure out metadata function
-export async function generateMetadata({ params }: props): Promise<Metadata> {
-  const event = await getEventDetails(params.id);
-  console.log(event);
-  return {
-    title: event?.name ?? "Invitation Manager",
-    description: event?.description ?? "You're invited!",
-  };
-}
+// export async function generateMetadata({ params }: props): Promise<Metadata> {
+//   const event = await getEventDetails(params.id);
+//   console.log(event);
+//   return {
+//     title: event?.name ?? "Invitation Manager",
+//     description: event?.description ?? "You're invited!",
+//   };
+// }
 
 export default function Page({ params }: props) {
   const { isLoading, data } = useQuery(
@@ -42,15 +41,15 @@ export default function Page({ params }: props) {
       </main>
     );
 
-  if (!data) {
+  if (!data || !data.ok) {
     notFound();
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 sm:p-20">
       <section className="space-y-5">
-        <h1 className="text-4xl font-bold">{data.name}</h1>
-        <p>{data.description}</p>
+        <h1 className="text-4xl font-bold">{data.value.name}</h1>
+        <p>{data.value.description}</p>
         <Card>
           <CardHeader className="pb-4">
             <CardTitle>Search for your invite</CardTitle>
@@ -59,7 +58,7 @@ export default function Page({ params }: props) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <FindInviteForm eventKey={data.key} />
+            <FindInviteForm eventKey={data.value.key} />
           </CardContent>
         </Card>
       </section>

@@ -50,14 +50,14 @@ export function FindInviteForm(props: Props) {
     e?.preventDefault();
     setButtonLoading(true);
     findInviteByFullName(eventKey, values.fullName).then((res) => {
-      if (!res) {
+      if (!res || !res.ok) {
         toast({
           description: "Invite not found",
           variant: "destructive",
         });
         setButtonLoading(false);
       } else {
-        router.push(`/invitation/${res.inviteKey}`);
+        router.push(`/invitation/${res.value.inviteKey}`);
       }
     });
   }

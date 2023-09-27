@@ -1,3 +1,5 @@
+import { logger } from "./logger/logger";
+
 export type Result<T> =
   | {
       ok: true;
@@ -8,25 +10,26 @@ export type Result<T> =
       error: unknown;
     };
 
-export const ProcessRequest = <TArgs extends any[], TReturn>(
-  func: (...args: TArgs) => TReturn,
-  ...args: TArgs
-): Result<TReturn> => {
-  try {
-    return {
-      value: func(...args),
-      ok: true,
-    };
-  } catch (e) {
-    return {
-      error: e,
-      ok: false,
-    };
-  }
-};
+// export const ProcessRequest = <TArgs extends any[], TReturn>(
+//   func: (..._args: TArgs) => TReturn,
+//   ...args: TArgs
+// ): Result<TReturn> => {
+//   try {
+//     return {
+//       value: func(...args),
+//       ok: true,
+//     };
+//   } catch (e) {
+//     logger.error(e);
+//     return {
+//       error: e,
+//       ok: false,
+//     };
+//   }
+// };
 
 export const ProcessRequestAsync = async <TArgs extends any[], TReturn>(
-  func: (...args: TArgs) => Promise<TReturn>,
+  func: (..._args: TArgs) => Promise<TReturn>,
   ...args: TArgs
 ): Promise<Result<TReturn>> => {
   try {
@@ -35,6 +38,7 @@ export const ProcessRequestAsync = async <TArgs extends any[], TReturn>(
       ok: true,
     };
   } catch (e) {
+    logger.error(e);
     return {
       error: e,
       ok: false,
