@@ -1,17 +1,21 @@
 import { env } from "../env.mjs";
 import { ILogger } from "./ILogger";
+import { logtail } from "./logtail-logger";
 
 class Logger implements ILogger {
   log(message: string): void {
-    console.log(message);
+    if (env.NEXT_PUBLIC_NODE_ENV === "development") console.log(message);
+    else logtail.log(message);
   }
 
-  error(_error: unknown): void {
+  error(_error: any): void {
     if (env.NEXT_PUBLIC_NODE_ENV === "development") console.error(_error);
+    else logtail.error(_error);
   }
 
   warn(message: string): void {
-    console.warn(message);
+    if (env.NEXT_PUBLIC_NODE_ENV === "development") console.warn(message);
+    else logtail.warn(message);
   }
 }
 

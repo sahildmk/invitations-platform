@@ -3,15 +3,15 @@ import { createEnv } from "@t3-oss/env-nextjs";
 
 const nodeEnv = z.enum(["development", "test", "production"]);
 
-const getBaseUrl = () => {
-  if (!process.env.VERCEL_ENV) return process.env.BASE_URL;
+// const getBaseUrl = () => {
+//   if (!process.env.VERCEL_ENV) return process.env.BASE_URL;
 
-  if (process.env.VERCEL_ENV === "production") {
-    return process.env.VERCEL_URL;
-  } else {
-    return process.env.VERCEL_BRANCH_URL;
-  }
-};
+//   if (process.env.VERCEL_ENV === "production") {
+//     return process.env.VERCEL_URL;
+//   } else {
+//     return process.env.VERCEL_BRANCH_URL;
+//   }
+// };
 
 export const env = createEnv({
   /**
@@ -22,6 +22,7 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     NODE_ENV: nodeEnv,
     BASE_URL: z.string().url(),
+    LOGTAIL_TOKEN: z.string(),
   },
 
   /**
@@ -32,6 +33,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_NODE_ENV: nodeEnv,
     NEXT_PUBLIC_BASE_URL: z.string(),
+    NEXT_PUBLIC_LOGTAIL_TOKEN: z.string(),
   },
 
   /**
@@ -43,7 +45,9 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     BASE_URL: process.env.BASE_URL,
     API_URL: process.env.API_URL,
+    LOGTAIL_TOKEN: process.env.LOGTAIL_TOKEN,
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_BASE_URL: getBaseUrl(),
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    NEXT_PUBLIC_LOGTAIL_TOKEN: process.env.NEXT_PUBLIC_LOGTAIL_TOKEN,
   },
 });
