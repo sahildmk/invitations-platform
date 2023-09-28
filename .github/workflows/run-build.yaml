@@ -8,7 +8,9 @@ env:
   DATABASE_URL: "http://localhost:3000"
   BASE_URL: "http://localhost:3000"
   API_URL: "http://localhost:3000"
-  NEXT_PUBLIC_API_URL: "http://localhost:3000"
+  LOGTAIL_TOKEN: "test"
+  NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
+  NEXT_PUBLIC_LOGTAIL_TOKEN: "test"
 jobs:
   build:
     runs-on: ubuntu-latest
