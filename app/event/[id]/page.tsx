@@ -73,7 +73,7 @@ export default function Page({ params }: props) {
         </Card>
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle>Search for your invite</CardTitle>
+            <CardTitle>Find your invite</CardTitle>
             <CardDescription>
               Enter your full name to find your invite
             </CardDescription>
