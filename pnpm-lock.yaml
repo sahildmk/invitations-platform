@@ -8,7 +8,7 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.3.1
     version: 3.3.1(react-hook-form@7.46.1)
-  '@logtail/node':
+  '@logtail/js':
     specifier: ^0.4.12
     version: 0.4.12(encoding@0.1.13)
   '@next/env':
@@ -440,11 +440,30 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
+  /@logtail/browser@0.4.12(encoding@0.1.13):
+    resolution: {integrity: sha512-5ur6pw01twqjNeYQF3viVVCnwzFxN2A4shdoYpF5s79kZVsmnoSvTRoGS4TheqZ6tuqb+e0lmcaPQFkG74dEuw==}
+    dependencies:
+      '@logtail/core': 0.4.12
+      '@logtail/tools': 0.4.12
+      cross-fetch: 3.1.8(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /@logtail/core@0.4.12:
     resolution: {integrity: sha512-2vtwTxdsyMUq9thSV+H3fGaqEbRGwKwWDDr+SdjMfbzhJpi191ZhBxjix0DM6vPvEb7VmX1AuF9qnRV0d7VMzw==}
     dependencies:
       '@logtail/tools': 0.4.12
       '@logtail/types': 0.4.11
+    dev: false
+
+  /@logtail/js@0.4.12(encoding@0.1.13):
+    resolution: {integrity: sha512-9IHGdOpNGhl69SYECakpkmN1pC7RpjbLinFPmtP9m39w0ecfy5/cnMOQdCAW2jp6Wg1yP0CvLbvsn9Ak/PCGSw==}
+    dependencies:
+      '@logtail/browser': 0.4.12(encoding@0.1.13)
+      '@logtail/node': 0.4.12(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /@logtail/node@0.4.12(encoding@0.1.13):

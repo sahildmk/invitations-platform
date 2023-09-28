@@ -1,4 +1,4 @@
-import { Logtail } from "@logtail/node";
+import { Node } from "@logtail/js";
 import { env } from "../env.mjs";
 
-export const logtail = new Logtail(env.NEXT_PUBLIC_LOGTAIL_TOKEN);
+export const logtail = new Node(env.NEXT_PUBLIC_LOGTAIL_TOKEN);
