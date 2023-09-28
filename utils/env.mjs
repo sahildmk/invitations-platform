@@ -4,6 +4,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 const nodeEnv = z.enum(["development", "test", "production"]);
 
 const getBaseUrl = () => {
+  console.log(process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL);
   if (!process.env.VERCEL_ENV) return process.env.BASE_URL;
 
   if (process.env.VERCEL_ENV === "production") {
