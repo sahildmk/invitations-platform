@@ -7,7 +7,6 @@ export async function myFetch(
   const error = {
     responseStatus: result.status,
     responseStatusText: result.statusText,
-    raw: await result.text(),
   };
 
   if (!result.ok) throw new Error(JSON.stringify(error));
