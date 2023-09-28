@@ -4,6 +4,7 @@ import {
   inviteStatusEnum,
 } from "@/shared/invite";
 import { env } from "@/utils/env.mjs";
+import { myFetch } from "@/utils/fetch";
 import { ProcessRequestAsync } from "@/utils/process-request";
 import { number, string, z } from "zod";
 
@@ -47,7 +48,9 @@ export type Invite = z.infer<typeof inviteSchemaWithEvent>;
 
 export const getEventDetails = async (id: string) => {
   return ProcessRequestAsync(async () => {
-    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/events/${id}`);
+    const result = await myFetch(
+      `${env.NEXT_PUBLIC_BASE_URL}/api/events/${id}`
+    );
     const json = await result.json();
     return eventSchemaWithInvites.parse(json);
   });
@@ -55,7 +58,7 @@ export const getEventDetails = async (id: string) => {
 
 export const getInviteDetails = async (id: string) => {
   return ProcessRequestAsync(async () => {
-    const result = await fetch(
+    const result = await myFetch(
       `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${id}`,
       {
         cache: "no-store",
@@ -74,7 +77,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
       ownerFullName: input.ownerFullName,
     };
 
-    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`, {
+    const result = await myFetch(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`, {
       method: "post",
       body: JSON.stringify(body),
     });
@@ -85,7 +88,7 @@ export const addInviteToEvent = async (input: CreateInviteInput) => {
 
 export const updateInvite = async (input: UpdateInvite) => {
   return ProcessRequestAsync(async () => {
-    const result = await fetch(
+    const result = await myFetch(
       `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${input.key}`,
       {
         method: "put",
@@ -104,7 +107,7 @@ export const findInviteByFullName = async (
     const url = new URL(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`);
     url.searchParams.set("eventKey", eventKey);
     url.searchParams.set("fullName", fullName);
-    const result = await fetch(url.toString(), {
+    const result = await myFetch(url.toString(), {
       cache: "no-store",
     });
     const json = await result.json();
