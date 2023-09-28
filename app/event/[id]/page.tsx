@@ -46,10 +46,31 @@ export default function Page({ params }: props) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8 sm:p-20">
-      <section className="space-y-5">
-        <h1 className="text-4xl font-bold">{data.value.name}</h1>
-        <p>{data.value.description}</p>
+    <main className="flex min-h-screen flex-col items-center p-8 pt-16 sm:p-20">
+      <section className="space-y-5 max-w-sm">
+        <h1 className="text-3xl sm:text-4xl font-bold">{data.value.name}</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Details</CardTitle>
+            <CardDescription>
+              {data.value.description}
+              <section className="text-sm mt-2">
+                <p>
+                  Event Organizer:{" "}
+                  <span className="font-medium text-primary">
+                    {data.value.contactFullName}
+                  </span>
+                </p>
+                <p>
+                  Contact Number:{" "}
+                  <span className="font-medium text-primary">
+                    {data.value.contactNumber}
+                  </span>
+                </p>
+              </section>
+            </CardDescription>
+          </CardHeader>
+        </Card>
         <Card>
           <CardHeader className="pb-4">
             <CardTitle>Search for your invite</CardTitle>

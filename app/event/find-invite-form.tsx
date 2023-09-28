@@ -52,8 +52,11 @@ export function FindInviteForm(props: Props) {
     findInviteByFullName(eventKey, values.fullName).then((res) => {
       if (!res || !res.ok) {
         toast({
-          description: "Invite not found",
+          title: "Invite Not Found",
+          description:
+            "Make sure you've entered your full name. If you're still having trouble, please contact the event organizer.",
           variant: "destructive",
+          duration: 5000,
         });
         setButtonLoading(false);
       } else {
@@ -64,8 +67,8 @@ export function FindInviteForm(props: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex space-x-4 mb-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+        <div className="space-x-4 mb-4">
           <FormField
             control={form.control}
             name="fullName"
@@ -80,7 +83,7 @@ export function FindInviteForm(props: Props) {
             )}
           />
         </div>
-        <Button type="submit">
+        <Button type="submit" className="w-full">
           {buttonLoading ? (
             <Loader2 className="animate-spin" />
           ) : (
