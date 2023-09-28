@@ -46,20 +46,32 @@ export async function GET(request: NextRequest) {
   });
 
   if (!event)
-    return NextResponse.json({ message: "event not found" }, { status: 404 });
+    return NextResponse.json(
+      { message: `Event with [eventKey={${eventKey}]} not found` },
+      { status: 404, statusText: "Event not found" }
+    );
 
+  const sanitizedName = sanitiseString(fullName);
   const result = await ProcessRequestAsync(async () => {
     return await db.query.invite.findFirst({
       where: (invite, { eq, and }) =>
         and(
           eq(invite.eventId, event.id),
-          eq(invite.ownerFullname, sanitiseString(fullName))
+          eq(invite.ownerFullname, sanitizedName)
         ),
     });
   });
 
   if (!result.ok || !result.value) {
-    return NextResponse.json({}, { status: 404 });
+    return NextResponse.json(
+      {
+        message: `Invite with name [fullName={${sanitizedName}}] not found for event [eventKey={${eventKey}}]`,
+      },
+      {
+        status: 404,
+        statusText: `Invite not found`,
+      }
+    );
   }
 
   return NextResponse.json(inviteToDto(result.value, event.key));
@@ -84,7 +96,13 @@ export async function POST(request: Request) {
   });
 
   if (!event)
-    return NextResponse.json({ message: "event not found" }, { status: 404 });
+    return NextResponse.json(
+      { message: `Event with [eventKey={${data.eventKey}]} not found` },
+      {
+        status: 404,
+        statusText: `Event not found`,
+      }
+    );
 
   const inviteResult = await db
     .insert(invite)

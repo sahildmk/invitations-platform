@@ -4,8 +4,13 @@ export async function myFetch(
 ): Promise<Response> {
   const result = await fetch(input, init);
 
-  if (!result.ok)
-    throw new Error(`status: ${result.status}, message: ${result.statusText}`);
+  const error = {
+    responseStatus: result.status,
+    responseStatusText: result.statusText,
+    raw: await result.text(),
+  };
+
+  if (!result.ok) throw new Error(JSON.stringify(error));
 
   return result;
 }
