@@ -14,13 +14,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FieldErrors, useForm } from "react-hook-form";
-import { Invite, updateInvite } from "@/services/eventsService";
-import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { BaseSyntheticEvent, useRef, useState } from "react";
-import { useRouter } from "next/router";
+import { useToast } from "@/components/ui/use-toast";
+import { Invite, updateInvite } from "@/services/eventsService";
 import { InviteStatus } from "@/shared/invite";
+import { BaseSyntheticEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const createFormSchema = (maxAttendees: number) => {
   return z.object({
@@ -87,7 +86,7 @@ export function ConfirmInviteForm(props: Props) {
       isConfirmed: false,
       inviteStatus: inviteStatus.current,
       contactNumber: values.contactNumber,
-    }).then((res) => {
+    }).then(() => {
       toast({
         description: GetToastDescription(
           inviteStatus.current,

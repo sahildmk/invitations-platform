@@ -1,17 +1,15 @@
 "use client";
-import { Invite, getInviteDetails } from "@/services/eventsService";
-import Link from "next/link";
-import { ConfirmInviteForm } from "./confirmInviteForm";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { useQuery } from "react-query";
-import { Loader2, Variable } from "lucide-react";
-import { notFound } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
-import { InviteStatus, inviteStatusEnum } from "@/shared/invite";
 import { toTitleCase } from "@/lib/utils";
+import { Invite, getInviteDetails } from "@/services/eventsService";
+import { InviteStatus, inviteStatusEnum } from "@/shared/invite";
+import { notFound } from "next/navigation";
+import { useQuery } from "react-query";
+import { ConfirmInviteForm } from "./confirmInviteForm";
 
 const variant: {
-  [key in InviteStatus]: "success" | "destructive" | "default";
+  [_ in InviteStatus]: "success" | "destructive" | "default";
 } = {
   [inviteStatusEnum.Values.confirmed]: "success",
   [inviteStatusEnum.Values.declined]: "destructive",
@@ -65,18 +63,20 @@ export default function Page({ params }: { params: { id: string } }) {
       </main>
     );
 
-  if (!data) {
+  if (!data?.ok) {
     notFound();
   }
 
   return (
     <main className="flex min-h-screen justify-center p-8 sm:p-20">
       <section className="flex flex-col items-center space-y-5 sm:w-[500px]">
-        <AttendenceBanner invite={data} />
-        <h1 className="text-3xl sm:text-4xl font-bold">{data.event?.name}</h1>
+        <AttendenceBanner invite={data.value} />
+        <h1 className="text-3xl sm:text-4xl font-bold">
+          {data.value.event?.name}
+        </h1>
         <h2 className="text-xl sm:text-2xl font-medium">
           <span className="font-semibold">
-            {toTitleCase(data.ownerFullname)}
+            {toTitleCase(data.value.ownerFullname)}
           </span>
           , you&apos;re invited!
         </h2>
@@ -84,7 +84,7 @@ export default function Page({ params }: { params: { id: string } }) {
           You have {invite.maxAttendees} allocated to you. How many will be
           attending?
         </p> */}
-        <ConfirmInviteForm invite={data} refetch={refetch} />
+        <ConfirmInviteForm invite={data.value} refetch={refetch} />
       </section>
     </main>
   );

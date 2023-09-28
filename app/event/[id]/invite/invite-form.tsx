@@ -13,11 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { addInviteToEvent } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
-import { BaseSyntheticEvent, useState } from "react";
+import { addInviteToEvent } from "@/services/eventsService";
 import { Loader2 } from "lucide-react";
+import { BaseSyntheticEvent, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -60,7 +60,7 @@ export function AddInviteForm(props: Props) {
       eventKey: eventKey,
       ownerFullName: values.fullName,
       maxAttendees: values.maxAttendees,
-    }).then((res) => {
+    }).then(() => {
       toast({
         description: `Invite added for ${values.fullName}`,
       });

@@ -4,6 +4,7 @@ import {
   inviteStatusEnum,
 } from "@/shared/invite";
 import { env } from "@/utils/env.mjs";
+import { ProcessRequestAsync } from "@/utils/process-request";
 import { number, string, z } from "zod";
 
 export const inviteSchema = z.object({
@@ -45,83 +46,68 @@ type CreateInviteInput = z.infer<typeof createInviteSchema>;
 export type Invite = z.infer<typeof inviteSchemaWithEvent>;
 
 export const getEventDetails = async (id: string) => {
-  try {
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/events/${id}`);
+  return ProcessRequestAsync(async () => {
+    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/events/${id}`);
     const json = await result.json();
     return eventSchemaWithInvites.parse(json);
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+  });
 };
 
 export const getInviteDetails = async (id: string) => {
-  try {
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/invites/${id}`, {
-      cache: "no-store",
-    });
+  return ProcessRequestAsync(async () => {
+    const result = await fetch(
+      `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
     const json = await result.json();
     return inviteSchemaWithEvent.parse(json);
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+  });
 };
 
 export const addInviteToEvent = async (input: CreateInviteInput) => {
-  const body = {
-    eventKey: input.eventKey,
-    maxAttendees: input.maxAttendees,
-    ownerFullName: input.ownerFullName,
-  };
+  return ProcessRequestAsync(async () => {
+    const body = {
+      eventKey: input.eventKey,
+      maxAttendees: input.maxAttendees,
+      ownerFullName: input.ownerFullName,
+    };
 
-  try {
-    const result = await fetch(`${env.NEXT_PUBLIC_API_URL}/invites`, {
+    const result = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`, {
       method: "post",
       body: JSON.stringify(body),
     });
-    const json = await result.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+
+    return await result.json();
+  });
 };
 
 export const updateInvite = async (input: UpdateInvite) => {
-  try {
+  return ProcessRequestAsync(async () => {
     const result = await fetch(
-      `${env.NEXT_PUBLIC_API_URL}/invites/${input.key}`,
+      `${env.NEXT_PUBLIC_BASE_URL}/api/invites/${input.key}`,
       {
         method: "put",
         body: JSON.stringify(input),
       }
     );
-    const json = await result.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+    return await result.json();
+  });
 };
 
 export const findInviteByFullName = async (
   eventKey: string,
   fullName: string
 ) => {
-  try {
-    const result = await fetch(
-      `${
-        env.NEXT_PUBLIC_API_URL
-      }/invites?eventKey=${eventKey}&fullName=${encodeURI(fullName)}`,
-      {
-        cache: "no-store",
-      }
-    );
+  return ProcessRequestAsync(async () => {
+    const url = new URL(`${env.NEXT_PUBLIC_BASE_URL}/api/invites`);
+    url.searchParams.set("eventKey", eventKey);
+    url.searchParams.set("fullName", fullName);
+    const result = await fetch(url.toString(), {
+      cache: "no-store",
+    });
     const json = await result.json();
     return inviteResponseSchema.parse(json);
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+  });
 };

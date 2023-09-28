@@ -13,13 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { findInviteByFullName } from "@/services/eventsService";
 import { useToast } from "@/components/ui/use-toast";
-import { BaseSyntheticEvent, useState } from "react";
+import { findInviteByFullName } from "@/services/eventsService";
 import { Loader2 } from "lucide-react";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { BaseSyntheticEvent, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -51,14 +50,14 @@ export function FindInviteForm(props: Props) {
     e?.preventDefault();
     setButtonLoading(true);
     findInviteByFullName(eventKey, values.fullName).then((res) => {
-      if (!res) {
+      if (!res || !res.ok) {
         toast({
           description: "Invite not found",
           variant: "destructive",
         });
         setButtonLoading(false);
       } else {
-        router.push(`/invitation/${res.inviteKey}`);
+        router.push(`/invitation/${res.value.inviteKey}`);
       }
     });
   }
