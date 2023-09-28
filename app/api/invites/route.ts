@@ -1,6 +1,7 @@
 import { db } from "@/server/db/db";
 import { invite } from "@/server/db/schema/schema";
 import { InviteResponse } from "@/shared/invite";
+import { logger } from "@/utils/logger/logger";
 import { ProcessRequestAsync } from "@/utils/process-request";
 import { NextRequest, NextResponse } from "next/server";
 import { number, string, z } from "zod";
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
 
   if (!event)
     return NextResponse.json(
-      { message: `Event with [eventKey={${eventKey}]} not found` },
+      {},
       { status: 404, statusText: "Event not found" }
     );
 
@@ -63,10 +64,11 @@ export async function GET(request: NextRequest) {
   });
 
   if (!result.ok || !result.value) {
+    logger.error(
+      `Invite with name [fullName={${sanitizedName}}] not found for event [eventKey={${eventKey}}]`
+    );
     return NextResponse.json(
-      {
-        message: `Invite with name [fullName={${sanitizedName}}] not found for event [eventKey={${eventKey}}]`,
-      },
+      {},
       {
         status: 404,
         statusText: `Invite not found`,
@@ -97,7 +99,7 @@ export async function POST(request: Request) {
 
   if (!event)
     return NextResponse.json(
-      { message: `Event with [eventKey={${data.eventKey}]} not found` },
+      {},
       {
         status: 404,
         statusText: `Event not found`,
