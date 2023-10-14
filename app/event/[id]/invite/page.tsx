@@ -115,7 +115,7 @@ export default function Page({ params }: { params: { id: string } }) {
               <CardHeader>
                 <CardTitle>Summary</CardTitle>
                 <CardDescription>
-                  Current totals for invitations
+                  Summary of totals for invites and guests
                 </CardDescription>
               </CardHeader>
               <CardContent>
