@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -28,7 +28,10 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const existingSorting: SortingState = JSON.parse(
+    localStorage.getItem("sorting") ?? "[]"
+  );
+  const [sorting, setSorting] = React.useState<SortingState>(existingSorting);
   const table = useReactTable({
     data,
     columns,
@@ -39,6 +42,10 @@ export function DataTable<TData, TValue>({
       sorting,
     },
   });
+
+  useEffect(() => {
+    localStorage.setItem("sorting", JSON.stringify(sorting));
+  }, [sorting]);
 
   return (
     <div className="rounded-md border">
